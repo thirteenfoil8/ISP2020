@@ -1,0 +1,7 @@
+PS D:\OneDrive\Documents\EPFL\Master_3\ISP\ISP2020\hw4\ex1> docker ps --format "table {{.ID}}\t{{.Status}}\t{{.Names}}"
+CONTAINER ID        STATUS              NAMES
+cb8cc6a2cfa7        Up 22 minutes       mitm
+1f4aa891d4a1        Up 22 minutes       client
+PS D:\OneDrive\Documents\EPFL\Master_3\ISP\ISP2020\hw4\ex1> docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cb8cc6a2cfa7
+172.18.0.3
+PS D:\OneDrive\Documents\EPFL\Master_3\ISP\ISP2020\hw4\ex1>
