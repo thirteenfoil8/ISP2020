@@ -1,0 +1,9 @@
+https://en.wikipedia.org/wiki/Transport_Layer_Security
+
+https://en.wikipedia.org/wiki/Cipher_suite
+
+https://en.wikipedia.org/wiki/RC4
+
+https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security
+
+TLS Handshake and protocol : http://blog.fourthbit.com/2014/12/23/traffic-analysis-of-an-ssl-slash-tls-session/
