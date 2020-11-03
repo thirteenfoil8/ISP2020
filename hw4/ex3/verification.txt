@@ -1,0 +1,58 @@
+verifier    | ------ TEST PART A : HTTP ------
+verifier    | I'm seeing a HTTPS redirect. If you're doing part B or C, that's normal
+verifier    | Part A somewhat successful
+verifier    |
+verifier    | ------ TEST PART B : SELF-SIGNED CERTIFICATE ------
+verifier    | Checking https on https://server
+verifier    | Received content:
+verifier    | <!DOCTYPE html>
+verifier    | <html lang="en">
+verifier    | <head>
+verifier    |     <meta charset="UTF-8">
+verifier    |     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+verifier    |     <title>Document</title>
+verifier    | </head>
+verifier    | <body>
+verifier    |     <h1>Hello World!</h1>
+verifier    | </body>
+verifier    | </html>
+verifier    |
+verifier    | HTTPS is enabled, CA was NOT verified
+verifier    | Part B: Success !
+verifier    |
+verifier    | ------ TEST PART C1: Signed certificate ------
+verifier    | Checking https on https://server
+verifier    | Received content:
+verifier    | <!DOCTYPE html>
+verifier    | <html lang="en">
+verifier    | <head>
+verifier    |     <meta charset="UTF-8">
+verifier    |     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+verifier    |     <title>Document</title>
+verifier    | </head>
+verifier    | <body>
+verifier    |     <h1>Hello World!</h1>
+verifier    | </body>
+verifier    | </html>
+verifier    |
+verifier    | HTTPS is enabled, CA was verified
+verifier    |
+verifier    | ------ TEST PART C2: HSTS ------
+verifier    | Checking https on https://server
+verifier    | Received content:
+verifier    | <!DOCTYPE html>
+verifier    | <html lang="en">
+verifier    | <head>
+verifier    |     <meta charset="UTF-8">
+verifier    |     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+verifier    |     <title>Document</title>
+verifier    | </head>
+verifier    | <body>
+verifier    |     <h1>Hello World!</h1>
+verifier    | </body>
+verifier    | </html>
+verifier    |
+verifier    | HTTPS is enabled, CA was verified
+verifier    | HSTS successfully enabled
+verifier    | Tests succeeded !
+verifier exited with code 0
