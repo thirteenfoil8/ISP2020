@@ -1,59 +1,86 @@
-
-from flask import Flask, request, abort, Response
-import datetime
-import time
+from flask import Flask, request, make_response
+import os
+import hmac, hashlib
 import base64
-import hmac
-import binascii
+import sys
 
-key = "PgQDSxNSFAACBUcURRw1CBEITFoMSA==".encode('utf-8')
 app = Flask(__name__)
 
+cookie_name = "LoginCookie"
 
-def generate_cookie(user, admin=False):
-    dts = datetime.datetime.utcnow()
-    epochtime = round(time.mktime(dts.timetuple()) + dts.microsecond / 1e6)
-    perm = "admin" if admin else "user"
-    hm = hmac.new(key, "{}{}".format(user, epochtime).encode('utf-8'))
-    x = base64.b64encode(hm.digest()).decode()
-    s = "{},{},com402,hw2,ex2,{},{}".format(user, epochtime, perm, x)
-    return base64.b64encode(s.encode('utf-8'))
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD = '42'
 
+SECRET = b'asdasdasdkldasld1312312312'
 
-@app.route('/login', methods=['POST'])
+def is_admin(username, password):
+	return username == ADMIN_USERNAME and \
+		password == ADMIN_PASSWORD
 
+def prepare_data(login_form):
+	username = login_form['username'].strip()
+	password = login_form['password'].strip()
+	return username, password
+
+def make_signature(msg):
+	signature = hmac.new(
+		SECRET,
+		msg=bytes(msg, 'utf-8'),
+		digestmod=hashlib.sha256
+	).hexdigest().upper()
+	return signature
+
+def base64_encode(message):
+	message_bytes = message.encode('utf-8')
+	base64_bytes = base64.b64encode(message_bytes)
+	return base64_bytes
+
+def base64_decode(base64_message):
+	message_bytes = base64.b64decode(base64_message)
+	message = message_bytes.decode('utf-8')
+	return message
+
+def make_cookie_text(username, password, user_group):
+	cookie_data = '%s,32131231,com402,hw2,ex2,%s' % (username, user_group)
+	signature = make_signature(cookie_data)
+	cookie_data = cookie_data + f',{signature}'
+	#cookie_data = base64_encode(cookie_data)
+	return cookie_data
+
+@app.route("/login",methods=['POST'])
 def login():
-    request_json = request.get_json()
-    user = request_json.get('user')
-    password = request_json.get('pass')
+	username, password = prepare_data(request.form)
+	user_group = 'admin' if is_admin(username, password) else 'user'
+	cookie_text = base64_encode(make_cookie_text(username, password, user_group))
 
-    response = app.make_response("Login page")
-    if user and password:
-        if user == "admin" and password == "42":
-            response.set_cookie('LoginCookie', value=generate_cookie(user, True))
-        else:
-            response.set_cookie('LoginCookie', value=generate_cookie(user, False))
+	response = make_response()
+	response.set_cookie(cookie_name, cookie_text)
+	return response
 
-    return response
-
-
-@app.route('/auth', methods=['GET'])
+@app.route("/auth",methods=['GET'])
 def auth():
-    if 'LoginCookie' in request.cookies:
-        loginCookie = request.cookies.get('LoginCookie')
-        decoded = base64.b64decode(loginCookie).decode('utf-8')
-        fields = decoded.split(',')
-        try:
-            hmu = base64.b64decode(fields[-1])
-            hmc = hmac.new(key, "{}{}".format(fields[0], fields[1]).encode('utf-8')).digest()
-            if hmac.compare_digest(hmu, hmc):
-                if fields[0] != "admin":
-                    return Response("Hi user", 201)
-                else:
-                    return "Hi admin"
-        except binascii.Error:
-            pass
-    return abort(403)
+	statusCode = 0
+	response = make_response()
+	loginCookie = request.cookies.get(cookie_name)
+	if loginCookie == None:
+		statusCode = 403
+	else:
+		loginCookie = base64_decode(loginCookie)
+		
+		tokens = loginCookie.split(',')
+		cookie_signature = tokens[-1]
+		no_hmac_cookie = ','.join(tokens[:-1])
+		message_signature = make_signature(no_hmac_cookie)
+
+		if cookie_signature != message_signature:
+			statusCode = 403
+		else:
+			userGroup = tokens[-2].strip()
+			if userGroup == 'admin':
+				statusCode = 200
+			else:
+				statusCode = 201
+	return response, statusCode
 
 if __name__ == '__main__':
 	app.run()
