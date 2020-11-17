@@ -1,0 +1,24 @@
+We know that the server response error 500 if the token is wrong and 200 if right.
+
+Then, we create an alphabet of a,b,c,...,1,2,3,..
+To submit the token, we need it to be in a Json form. 
+Then:
+def submit_token(host, token):
+	start_time = time.time()
+	r = requests.post(host, json={
+		'token': token
+	})
+	end_time = time.time()
+	elapsed_time = end_time - start_time
+	return r, elapsed_time
+we create an empty char : current_token = ''
+
+and we want to fill it with the good caracters of the token. 
+
+To do so, we need the padding character ( alphabet[0]).
+The size of the final token is 12
+after that, we loop on every single caracter in the alphabet and try to submit it 
+so, the token will be : car1, padding *11 
+then : car1,car2, padding *10, ...
+We know that if the car1 is the good one, then the response will be 200. we store it in current_token
+We redo this procedure until size of current_token =12
